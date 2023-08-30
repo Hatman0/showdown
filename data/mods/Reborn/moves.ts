@@ -4965,11 +4965,24 @@ export const Moves: {[moveid: string]: MoveData} = {
 		num: 153,
 		accuracy: 100,
 		basePower: 250,
+		basePowerCallback(source, target, move) {
+			if (this.field.isTerrain('electricterrain')) {
+				if (!source.isAlly(target)) this.hint(`${move.name}'s Explosion is boosted x1.5.`);
+				return move.basePower * 1.5;
+			}
+			return move.basePower;
+		},
 		category: "Physical",
 		name: "Explosion",
 		pp: 5,
 		priority: 0,
 		flags: {protect: 1, mirror: 1, noparentalbond: 1},
+		onEffectiveness(typeMod, target, type, move) {
+			if (this.field.isTerrain('electricterrain')) {
+				if (!source.isAlly(target)) this.hint(`${move.name}'s Explosion is electrified.`);
+				return typeMod + this.dex.getEffectiveness('Electric', type);
+			}
+		},
 		selfdestruct: "always",
 		secondary: null,
 		target: "allAdjacent",
@@ -9823,7 +9836,14 @@ export const Moves: {[moveid: string]: MoveData} = {
 				}
 			},
 		},
-		secondary: null,
+		secondary: {
+			chance: 100,
+			self: {
+				onHit() {
+					this.field.setTerrain('electricterrain');
+				},
+			},
+		},
 		target: "all",
 		type: "Electric",
 		zMove: {boost: {spa: 1}},
@@ -10950,6 +10970,13 @@ export const Moves: {[moveid: string]: MoveData} = {
 		num: 443,
 		accuracy: true,
 		basePower: 60,
+		basePowerCallback(source, target, move) {
+			if (this.field.isTerrain('electricterrain')) {
+				if (!source.isAlly(target)) this.hint(`${move.name}'s BP doubled in Electric Terrain.`);
+				return move.basePower * 2;
+			}
+			return move.basePower;
+		},
 		category: "Physical",
 		isNonstandard: "Past",
 		name: "Magnet Bomb",
@@ -13592,7 +13619,14 @@ export const Moves: {[moveid: string]: MoveData} = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1, punch: 1},
 		pseudoWeather: 'iondeluge',
-		secondary: null,
+		secondary: {
+			chance: 100,
+			self: {
+				onHit() {
+					this.field.setTerrain('electricterrain');
+				},
+			},
+		},
 		target: "normal",
 		type: "Electric",
 		contestType: "Cool",
