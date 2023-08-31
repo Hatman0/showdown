@@ -13619,13 +13619,15 @@ export const Moves: {[moveid: string]: MoveData} = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1, punch: 1},
 		pseudoWeather: 'iondeluge',
-		secondary: {
-			chance: 100,
-			self: {
-				onHit() {
-					this.field.setTerrain('electricterrain');
-				},
-			},
+		onAfterHit(target, source, move) {
+			if (source.hp) {
+				this.field.setTerrain('electricterrain');
+			}
+		},
+		onAfterSubDamage(damage, target, source, move) {
+			if (source.hp) {
+				this.field.setTerrain('electricterrain');
+			}
 		},
 		target: "normal",
 		type: "Electric",
